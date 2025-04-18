@@ -4,11 +4,9 @@
 
 # Single-GPU-Passthrough for AMD, NVIDIA and Intel Arc Battlemage GPUs
 
-This is a fork of ilayna's Single-GPU-Passthrough script, that worked well for AMD and NVIDIA devices but lacked support for second generation Intel Arc devices.
-For now, only the second generation of Intel Arc is supported (B580 and B570). The Battlemage architecture uses the newer "Xe" driver and is generally more
-stable when it comes to virtualisation. If i ever manage to passthrough my previous Arc (A380), I will update this script and thus will support the entire Arc lineup.
+This is a fork of ilayna's Single-GPU-Passthrough script, which worked well for AMD and NVIDIA devices but lacked support for second-generation Intel Arc devices. For now, only second-generation Intel Arc GPUs (B580 and B570) are supported. The Battlemage architecture uses the newer "Xe" driver, which is generally more stable for virtualization. If I ever manage to passthrough my previous Arc (A380), I will update this script to support the entire Arc lineup.
 
-This script only installs and activates the passthrough mechanism used when starting the VM. I removed the QEMU/Libvirt setup script, since it's out of date and there newer, better scripts available.
+This script only installs and activates the passthrough mechanism used when starting the VM. I removed the QEMU/Libvirt setup script, as it is outdated, and there are newer, better scripts available.
 
 
 ### My single gpu passthrough guide, it is fully automatic, and it is as simple as it gets
