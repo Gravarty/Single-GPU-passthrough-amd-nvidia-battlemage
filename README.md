@@ -2,11 +2,14 @@
    <a href="https://discord.gg/ZpXvd2RJVz"><img src="https://img.shields.io/badge/discord-join-7289DA.svg?logo=discord&longCache=true&style=flat" /></a>
 </p>
 
-# Single-GPU-passthrough-amd-nvidia-battlemage
+# Single-GPU-Passthrough for AMD, NVIDIA and Intel Arc Battlemage GPUs
 
-This fork is basicially the same as https://github.com/ilayna/Single-GPU-passthrough-amd-nvidia but added support for Intel Arc Battlemage graphics cards.
+This is a fork of ilayna's Single-GPU-Passthrough script, that worked well for AMD and NVIDIA devices but lacked support for second generation Intel Arc devices.
+For now, only the second generation of Intel Arc is supported (B580 and B570). The Battlemage architecture uses the newer "Xe" driver and is generally more
+stable when it comes to virtualisation. If i ever manage to passthrough my previous Arc (A380) will update this script and thus will support the entire Arc lineup.
 
-## if you are having troubles please see the '[manual](https://github.com/wabulu/Single-GPU-passthrough-amd-nvidia/tree/3d8666e66d009493a3f5b574bdba15954ed86af5)' branch
+This script only installs and activates the passthrough mechanism used when starting the VM. I removed the QEMU/Libvirt setup script, since it's out of date and there newer, better scripts available.
+
 
 ### My single gpu passthrough guide, it is fully automatic, and it is as simple as it gets
 
@@ -20,23 +23,12 @@ This fork is basicially the same as https://github.com/ilayna/Single-GPU-passthr
 - If you chose to clone it instead of downloading it you should do <br />
   ```cd ~/Downloads ```<br />
   ```git clone https://github.com/wabulu/Single-GPU-passthrough-amd-nvidia.git```<br />
-
-
+  
 ### Step 2:
 
-- Run the script which would do (almost) everything for you by changing your directory to the folder with <br/>
-  ``cd Single-GPU-passthrough-amd-nvidia/ ``<br/>
-  and then executing the script with ``sudo bash ./setup.sh`` <br/>
+ **install the scripts** with ``sudo bash ./install_hooks.sh``. If it doesn't launch, do "chmod +xr" to make it executable.
 
 ### Step 3:
-
-Now you just need to setup virt-manager as for now the scripts doesn't do it automatically, <br/>
-you can do that by visiting
-this <a href="https://gitlab.com/risingprismtv/single-gpu-passthrough/-/wikis/5)-Configuring-Virtual-Machine-Manager">
-link</a>
-After that, all that is left is to **install the scripts** with ``sudo bash ./install_hooks.sh``
-
-### Step 4:
 
 If you did everything right you can try running the vm (make sure it's named win10 otherwise make sure to replace `win10` in /etc/libvirt/hooks/qemu line 8 to the name) <br/>
 **nvidia users** might also want to go to
