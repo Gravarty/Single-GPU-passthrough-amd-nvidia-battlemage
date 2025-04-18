@@ -2,7 +2,7 @@
    <a href="https://discord.gg/ZpXvd2RJVz"><img src="https://img.shields.io/badge/discord-join-7289DA.svg?logo=discord&longCache=true&style=flat" /></a>
 </p>
 
-# Single-GPU-passthrough-amd-nvidia
+# Single-GPU-passthrough-amd-nvidia-battlemage
 
 ## if you are having troubles please see the '[manual](https://github.com/wabulu/Single-GPU-passthrough-amd-nvidia/tree/3d8666e66d009493a3f5b574bdba15954ed86af5)' branch
 
