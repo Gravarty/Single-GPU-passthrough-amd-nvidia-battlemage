@@ -4,6 +4,8 @@
 
 # Single-GPU-passthrough-amd-nvidia-battlemage
 
+This fork is basicially the same as https://github.com/ilayna/Single-GPU-passthrough-amd-nvidia but added support for Intel Arc Battlemage graphics cards.
+
 ## if you are having troubles please see the '[manual](https://github.com/wabulu/Single-GPU-passthrough-amd-nvidia/tree/3d8666e66d009493a3f5b574bdba15954ed86af5)' branch
 
 ### My single gpu passthrough guide, it is fully automatic, and it is as simple as it gets
