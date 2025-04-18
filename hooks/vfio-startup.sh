@@ -15,9 +15,10 @@
 ## Void for testing and helping out in general     ## ##                   ##
 ## .Chris. for testing and helping out in general  ## ## Run this command  ##
 ## WORMS for helping out with testing              ## ## if you dont have  ##
-##################################################### ## names in you're   ##
-## The VFIO community for using the scripts and    ## ## lspci feedback    ##
-## testing them for us!                            ## ## in your terminal  ##
+## The VFIO community for using the scripts and    ## ## names in you're   ##
+## testing them for us!                            ## ## lspci feedback    ##
+##################################################### ## in your terminal  ##
+## Modified for Intel Arc B580 by Grok             ## ##                   ##
 ##################################################### #######################
 
 ################################# Variables #################################
@@ -31,7 +32,6 @@ DISPMGR="null"
 ################################## Script ###################################
 
 echo "$DATE Beginning of Startup!"
-
 
 function stop_display_manager_if_running {
     ## Get display manager on systemd based distros ##
@@ -51,49 +51,47 @@ function stop_display_manager_if_running {
         done
 
         return
-
     fi
-
 }
 
 function kde-clause {
-
     echo "$DATE Display Manager = display-manager"
 
     ## Stop display manager using systemd ##
     if systemctl is-active --quiet "display-manager.service"; then
-    
-        grep -qsF "display-manager" "/tmp/vfio-store-display-manager"  || echo "display-manager" >/tmp/vfio-store-display-manager
+        grep -qsF "display-manager" "/tmp/vfio-store-display-manager" || echo "display-manager" >/tmp/vfio-store-display-manager
         systemctl stop "display-manager.service"
     fi
 
-        while systemctl is-active --quiet "display-manager.service"; do
-                sleep 2
-        done
+    while systemctl is-active --quiet "display-manager.service"; do
+        sleep 2
+    done
 
     return
-
 }
 
 ####################################################################################################################
-## Checks to see if your running KDE. If not it will run the function to collect your display manager.            ##
-## Have to specify the display manager because kde is weird and uses display-manager even though it returns sddm. ##
+## Checks to see if you're running KDE. If not, it will run the function to collect your display manager.          ##
+## Have to specify the display manager because KDE is weird and uses display-manager even though it returns sddm. ##
 ####################################################################################################################
 
 if pgrep -l "plasma" | grep "plasmashell"; then
     echo "$DATE Display Manager is KDE, running KDE clause!"
     kde-clause
-    else
-        echo "$DATE Display Manager is not KDE!"
-        stop_display_manager_if_running
+else
+    echo "$DATE Display Manager is not KDE!"
+    stop_display_manager_if_running
 fi
 
 ## Unbind EFI-Framebuffer ##
 if test -e "/tmp/vfio-is-nvidia"; then
     rm -f /tmp/vfio-is-nvidia
-    else
-        test -e "/tmp/vfio-is-amd"
-        rm -f /tmp/vfio-is-amd
+else
+    test -e "/tmp/vfio-is-amd"
+    rm -f /tmp/vfio-is-amd
+fi
+if test -e "/tmp/vfio-is-intel"; then
+    rm -f /tmp/vfio-is-intel
 fi
 
 sleep "1"
@@ -108,7 +106,7 @@ for (( i = 0; i < 16; i++))
 do
   if test -x /sys/class/vtconsole/vtcon"${i}"; then
       if [ "$(grep -c "frame buffer" /sys/class/vtconsole/vtcon"${i}"/name)" = 1 ]; then
-	       echo 0 > /sys/class/vtconsole/vtcon"${i}"/bind
+           echo 0 > /sys/class/vtconsole/vtcon"${i}"/bind
            echo "$DATE Unbinding Console ${i}"
            echo "$i" >> /tmp/vfio-bound-consoles
       fi
@@ -117,7 +115,8 @@ done
 
 sleep "1"
 
-if lspci -nn | grep -e VGA | grep -s NVIDIA ; then
+## Check for GPU type and unbind drivers ##
+if lspci -nn | grep -e VGA | grep -is "NVIDIA"; then
     echo "$DATE System has an NVIDIA GPU"
     grep -qsF "true" "/tmp/vfio-is-nvidia" || echo "true" >/tmp/vfio-is-nvidia
     echo efi-framebuffer.0 > /sys/bus/platform/drivers/efi-framebuffer/unbind
@@ -132,9 +131,8 @@ if lspci -nn | grep -e VGA | grep -s NVIDIA ; then
     modprobe -r drm
 
     echo "$DATE NVIDIA GPU Drivers Unloaded"
-fi
 
-if lspci -nn | grep -e VGA | grep -s AMD ; then
+elif lspci -nn | grep -e VGA | grep -is "AMD"; then
     echo "$DATE System has an AMD GPU"
     grep -qsF "true" "/tmp/vfio-is-amd" || echo "true" >/tmp/vfio-is-amd
     echo efi-framebuffer.0 > /sys/bus/platform/drivers/efi-framebuffer/unbind
@@ -146,6 +144,22 @@ if lspci -nn | grep -e VGA | grep -s AMD ; then
     modprobe -r drm
 
     echo "$DATE AMD GPU Drivers Unloaded"
+
+elif lspci -nn | grep -e VGA | grep -is "Intel"; then
+    echo "$DATE System has an Intel GPU"
+    grep -qsF "true" "/tmp/vfio-is-intel" || echo "true" >/tmp/vfio-is-intel
+    echo efi-framebuffer.0 > /sys/bus/platform/drivers/efi-framebuffer/unbind
+
+    ## Unload Intel GPU drivers (Xe driver for Arc B580) ##
+    modprobe -r xe
+    modprobe -r drm_kms_helper
+    modprobe -r drm
+
+    echo "$DATE Intel GPU Drivers Unloaded"
+
+else
+    echo "$DATE No supported GPU (NVIDIA, AMD, or Intel) detected!"
+    exit 1
 fi
 
 ## Load VFIO-PCI driver ##
